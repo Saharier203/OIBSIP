@@ -33,7 +33,7 @@ async function getTransporter() {
         pass: testAccount.pass,
       },
     });
-    console.log('Ethereal test account created: %s', testAccount.url);
+    console.log('Ethereal test account ready for:', testAccount.user);
     return transporter;
   }
   return null;

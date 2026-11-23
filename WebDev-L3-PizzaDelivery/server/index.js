@@ -1,15 +1,19 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 import express from 'express';
-import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
+import catalogRoutes from './routes/catalog.js';
+import adminInventoryRoutes from './routes/adminInventory.js';
+import { requireAuth } from './middleware/auth.js';
+import { connectDB } from './config/db.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Simple body-parser for JSON
+// Parse JSON bodies and cookies
 app.use(express.json());
+app.use(cookieParser());
 
 // Health check (no DB needed)
 app.get('/api/health', (req, res) => {
@@ -19,28 +23,22 @@ app.get('/api/health', (req, res) => {
 // --- Auth routes ---
 app.use('/api/auth', authRoutes);
 
+// --- Catalog routes (public) ---
+app.use('/api/catalog', catalogRoutes);
+
+// --- Admin inventory routes ---
+app.use('/api/admin/inventory', adminInventoryRoutes);
+
 // --- Protected example route (demo) ---
-app.get('/api/protected', (req, res) => {
-  try {
-    // req.user is attached by the requireAuth middleware (not shown here yet)
-    res.json({ message: 'This is a protected route', user: req.user });
-  } catch (err) {
-    res.status(500).json({ error: 'Auth middleware failed' });
-  }
+app.get('/api/protected', requireAuth, (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
 });
 
-// Connect to MongoDB (best‑effort; server starts even if DB is down)
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(port, () => console.log(`Server running on port ${port}`));
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error (server still starting):', err.message);
-    // Still start the HTTP server even if DB is unavailable
-    app.listen(port, () => console.log(`Server running on port ${port} (DB connection failed)`));
-  });
+try {
+  await connectDB();
+  console.log('Connected to MongoDB');
+} catch (err) {
+  console.error('MongoDB connection error (server still starting):', err.message);
+}
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
