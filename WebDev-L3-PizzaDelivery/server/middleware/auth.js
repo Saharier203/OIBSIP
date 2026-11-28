@@ -38,3 +38,13 @@ export const requireAdmin = (req, res, next) => {
   }
   next();
 };
+
+export const requireCustomer = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  if (req.user.role !== 'user') {
+    return res.status(403).json({ error: 'Customer access required' });
+  }
+  next();
+};

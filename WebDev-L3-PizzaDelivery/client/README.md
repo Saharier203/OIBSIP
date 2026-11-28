@@ -1,16 +1,42 @@
-# React + Vite
+# Pizza Delivery
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack pizza ordering web application with a customer storefront and an admin dashboard.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Frontend: React, Vite, React Router, Tailwind CSS, Axios
+- Backend: Node.js, Express, MongoDB (Mongoose)
+- Auth: JWT stored in httpOnly cookies, bcrypt password hashing
+- Payments: Razorpay (test mode)
+- Email: Nodemailer
 
-## React Compiler
+## Project structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `client/` — React storefront and admin UI
+- `server/` — Express REST API
 
-## Expanding the ESLint configuration
+## Running locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Server
+
+```
+cd server
+npm install
+# create server/.env with MONGODB_URI, JWT_SECRET, etc. (see ../.env.example)
+npm run seed        # seed catalog + inventory (idempotent)
+npm run seed:admin  # create the admin account from ADMIN_* env vars
+npm run dev         # starts the API on http://localhost:5000
+```
+
+### Client
+
+```
+cd client
+npm install
+npm run dev         # starts Vite (proxies /api to http://localhost:5000)
+```
+
+## Notes
+
+- Payment endpoints require Razorpay test keys in `server/.env`.
+- Never commit real secrets; use the `.env.example` placeholders as a template.

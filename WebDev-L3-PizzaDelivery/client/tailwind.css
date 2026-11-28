@@ -1,3 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #FFF9F0;
+  --color-primary: #D93627;
+  --color-charcoal: #24211F;
+  --color-accent: #F4B942;
+  --color-muted: #6B6375;
+  --color-border: #E5E4E7;
+  --color-border-light: #E5E4E7;
+}
